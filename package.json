@@ -39,7 +39,7 @@
     "dist/",
     ".textlintrc",
     "README.md",
-    "README_ja.md",
+    "README.ja.md",
     "LICENSE"
   ],
   "license": "MIT",
