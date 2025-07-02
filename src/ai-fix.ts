@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { createLinter, loadTextlintrc } from 'textlint';
 import { promises as fs } from 'node:fs';
-import path from 'node:path';
-import { defaultConfig } from './default-config.js';
 import os from 'node:os';
+import path from 'node:path';
+import { createLinter, loadTextlintrc } from 'textlint';
+import { defaultConfig } from './default-config.js';
 
 interface TextlintMessage {
   loc: {
@@ -30,7 +30,7 @@ interface Report {
 }
 
 // Parse command line arguments
-const [,, file, ...flags] = process.argv;
+const [, , file, ...flags] = process.argv;
 
 // Handle --demo flag
 if (file === '--demo' || flags.includes('--demo')) {
@@ -51,7 +51,9 @@ if (file === '--demo' || flags.includes('--demo')) {
 
 // Show usage if no file provided
 if (!file) {
-  console.error('AI-Writing Fix CLI - Detect AI-like expressions in Japanese text');
+  console.error(
+    'AI-Writing Fix CLI - Detect AI-like expressions in Japanese text'
+  );
   console.error('');
   console.error('Usage: ai-fix <file> [--json]');
   console.error('');
@@ -75,7 +77,7 @@ let tempConfigPath: string | null = null;
 try {
   // Resolve file path
   const filePath: string = path.resolve(file);
-  
+
   // Check if file exists
   try {
     await fs.access(filePath);
@@ -88,42 +90,45 @@ try {
   const originalContent: string = await fs.readFile(filePath, 'utf8');
 
   // Load textlint configuration with fallback to default
-  let descriptor;
+  let descriptor: any;
   let usingDefaultConfig = false;
-  
+
   // Check if .textlintrc exists in current directory
-  const hasLocalConfig = await fs.access('.textlintrc').then(() => true).catch(() => false);
-  
+  const hasLocalConfig = await fs
+    .access('.textlintrc')
+    .then(() => true)
+    .catch(() => false);
+
   if (hasLocalConfig) {
     descriptor = await loadTextlintrc();
   } else {
     // Use default configuration if no .textlintrc found
     usingDefaultConfig = true;
-    
+
     // Create temporary config file
     tempConfigPath = path.join(os.tmpdir(), `textlintrc-${Date.now()}.json`);
     await fs.writeFile(tempConfigPath, JSON.stringify(defaultConfig, null, 2));
-    
+
     // Load from temporary config
     descriptor = await loadTextlintrc({
-      configFilePath: tempConfigPath
+      configFilePath: tempConfigPath,
     });
   }
 
   // Create linter instance
   const linter = createLinter({
-    descriptor: descriptor
+    descriptor: descriptor,
   });
 
   // First, lint the file to get all messages
   const lintResults = await linter.lintFiles([filePath]);
   const lintResult = lintResults[0];
-  
+
   if (!lintResult) {
     console.error('Error: No result from textlint');
     process.exit(1);
   }
-  
+
   // Then try to fix (even though current rules might not be fixable)
   const fixResults = await linter.fixFiles([filePath]);
   const fixResult = fixResults[0];
@@ -132,14 +137,14 @@ try {
     console.error('Error: No result from textlint fix');
     process.exit(1);
   }
-  
+
   // Use lint messages since fix doesn't provide them for non-fixable rules
   const allMessages: TextlintMessage[] = lintResult.messages || [];
 
   // Handle --json mode
   if (isJson) {
     const lines: string[] = originalContent.split('\n');
-    
+
     // Use messages from lint result since fix result doesn't include non-fixable messages
     const messages: TextlintMessage[] = allMessages;
 
@@ -147,7 +152,7 @@ try {
     const issues: Issue[] = messages.map((message: TextlintMessage) => {
       const startLine: number = message.loc.start.line - 1;
       const endLine: number = message.loc.end.line - 1;
-      
+
       // Extract the problematic text
       let beforeText: string = '';
       if (startLine === endLine) {
@@ -177,14 +182,14 @@ try {
         rule: message.ruleId,
         message: message.message,
         before: beforeText,
-        after: message.fix ? message.fix.text : null
+        after: message.fix ? message.fix.text : null,
       };
     });
 
     // Output JSON report
     const report: Report = {
       file: filePath,
-      issues: issues
+      issues: issues,
     };
 
     console.log(JSON.stringify(report, null, 2));
@@ -193,10 +198,12 @@ try {
   // Default mode: show issues in human-readable format
   else {
     if (usingDefaultConfig && allMessages.length >= 0) {
-      console.log('ℹ️  Using default AI-writing detection rules (no .textlintrc found)');
+      console.log(
+        'ℹ️  Using default AI-writing detection rules (no .textlintrc found)'
+      );
       console.log();
     }
-    
+
     if (allMessages.length > 0) {
       console.log(`Found ${allMessages.length} issue(s) in ${filePath}:`);
       console.log();
@@ -205,15 +212,23 @@ try {
         console.log(`   Rule: ${msg.ruleId}`);
         console.log();
       });
-      console.log('Note: These rules detect AI-like patterns but do not provide automatic fixes.');
-      console.log('Use --json flag for structured JSON output compatible with AI tools.');
+      console.log(
+        'Note: These rules detect AI-like patterns but do not provide automatic fixes.'
+      );
+      console.log(
+        'Use --json flag for structured JSON output compatible with AI tools.'
+      );
       if (usingDefaultConfig) {
-        console.log('\nTip: Create a .textlintrc file to customize rules or add more checks.');
+        console.log(
+          '\nTip: Create a .textlintrc file to customize rules or add more checks.'
+        );
       }
     } else {
       console.log(`✅ No AI-like issues found in: ${filePath}`);
       if (usingDefaultConfig) {
-        console.log('   (Using default detection rules - create .textlintrc for more options)');
+        console.log(
+          '   (Using default detection rules - create .textlintrc for more options)'
+        );
       }
     }
   }
@@ -229,14 +244,13 @@ try {
       // Ignore cleanup errors
     }
   }
-
 } catch (error) {
   const err = error as Error;
   console.error('Error:', err.message);
   if (err.stack && process.env.DEBUG) {
     console.error(err.stack);
   }
-  
+
   // Clean up temporary config file if created
   if (tempConfigPath) {
     try {
@@ -245,6 +259,6 @@ try {
       // Ignore cleanup errors
     }
   }
-  
+
   process.exit(1);
 }
