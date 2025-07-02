@@ -1,7 +1,7 @@
 {
   "name": "ai-writing-fix-cli",
-  "version": "1.0.0",
-  "description": "「AIっぽい」表現をtextlintで検知して、レポートをSTDOUTへ出力するCLIツール",
+  "version": "0.1.0",
+  "description": "A CLI tool that detects AI-like expressions in Japanese text using textlint, providing human-readable reports and JSON output for AI tools.",
   "type": "module",
   "main": "dist/ai-fix.js",
   "bin": {
