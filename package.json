@@ -1,0 +1,54 @@
+{
+  "name": "ai-writing-fix-cli",
+  "version": "1.0.0",
+  "description": "「AIっぽい」表現をtextlintで検知して、レポートをSTDOUTへ出力するCLIツール",
+  "type": "module",
+  "main": "dist/ai-fix.js",
+  "bin": {
+    "ai-fix": "./dist/ai-fix.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/ai-fix.ts",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "textlint",
+    "ai-writing",
+    "cli",
+    "japanese"
+  ],
+  "author": "shinshin86",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shinshin86/ai-writing-fix-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shinshin86/ai-writing-fix-cli/issues"
+  },
+  "homepage": "https://github.com/shinshin86/ai-writing-fix-cli#readme",
+  "files": [
+    "dist/",
+    ".textlintrc",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@textlint-ja/textlint-rule-preset-ai-writing": "^1.4.0",
+    "textlint": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.8",
+    "@vitest/ui": "^3.2.4",
+    "textlint-rule-preset-ja-technical-writing": "^10.0.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
