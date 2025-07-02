@@ -39,7 +39,8 @@
     "dist/",
     ".textlintrc",
     "README.md",
-    "CLAUDE.md"
+    "README_ja.md",
+    "LICENSE"
   ],
   "license": "MIT",
   "dependencies": {
