@@ -1,6 +1,6 @@
 # AI-Writing Fix CLI
 
-[![Tests](https://github.com/shinshin86/ai-writing-fix-cli/actions/workflows/test.yml/badge.svg)](https://github.com/shinshin86/ai-writing-fix-cli/actions/workflows/test.yml)
+[![CI](https://github.com/shinshin86/ai-writing-fix-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/shinshin86/ai-writing-fix-cli/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A CLI tool that detects "AI-like" expressions in Japanese text using textlint, providing human-readable reports and JSON output for AI tools.

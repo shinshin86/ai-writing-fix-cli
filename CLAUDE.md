@@ -27,6 +27,8 @@ TypeScript-based CLI tool with src/dist build structure. The main CLI script wra
 - **.textlintrc**: Optional configuration file for customizing rules (tool works without it)
 - **test/fixtures/**: Contains `ai-like.md` (with AI expressions) and `clean.md` (without issues) for testing
 - **tsconfig.json**: TypeScript configuration with ESM output targeting ES2022
+- **biome.json**: Biome configuration for formatting and linting (indentWidth: 2, lineWidth: 80)
+- **.github/workflows/ci.yml**: GitHub Actions CI/CD pipeline for automated testing
 
 ### Exit Codes
 - `0`: No issues found
@@ -43,6 +45,14 @@ npm run build
 
 # Run in development mode (TypeScript directly)
 npm run dev test.md --json
+
+# Code Quality
+npm run format        # Format code with Biome
+npm run format:check  # Check formatting (CI-friendly)
+npm run lint          # Run Biome linter
+npm run lint:fix      # Run linter with auto-fix
+npm run check         # Run both formatting and linting
+npm run check:fix     # Run both with auto-fix
 
 # Run tests
 npm test
@@ -87,6 +97,26 @@ Project uses TypeScript with ESM output. The `tsconfig.json` is configured to:
 - Use strict type checking
 
 Build process compiles TypeScript to JavaScript, maintaining ESM format with `"type": "module"` in package.json.
+
+### Code Quality Tools
+The project uses Biome for formatting and linting:
+- **Formatting**: 2-space indentation, 80-character line width, single quotes
+- **Linting**: TypeScript-aware rules with automatic fixes available
+- **Organization**: Import sorting and unused import removal
+
+### CI/CD Pipeline
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs on:
+- Push to main branch
+- Pull requests to main branch
+- Manual dispatch
+
+Pipeline includes:
+1. Matrix testing across Node.js 18, 20, 22
+2. Code formatting validation (`npm run format:check`)
+3. Linting validation (`npm run lint`)
+4. TypeScript compilation (`npm run build`)
+5. Test execution (`npm run test:ci`)
+6. CLI functional testing with exit code validation
 
 ## Claude Code Integration
 

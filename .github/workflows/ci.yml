@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test (Node.js ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20, 22]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check code formatting
+        run: npm run format:check
+      
+      - name: Run linting
+        run: npm run lint
+      
+      - name: Build TypeScript
+        run: npm run build
+      
+      - name: Run tests
+        run: npm run test:ci
+      
+      - name: Test CLI functionality
+        run: |
+          # Test basic functionality
+          npx . test/fixtures/ai-like.md
+          
+          # Test JSON output
+          npx . test/fixtures/ai-like.md --json > /tmp/test-output.json
+          
+          # Verify exit codes
+          if npx . test/fixtures/clean.md; then
+            echo "✅ Clean file test passed (exit code 0)"
+          else
+            echo "❌ Clean file test failed"
+            exit 1
+          fi
+          
+          if ! npx . test/fixtures/ai-like.md; then
+            echo "✅ AI-like file test passed (exit code 1)"
+          else
+            echo "❌ AI-like file test failed"
+            exit 1
+          fi
