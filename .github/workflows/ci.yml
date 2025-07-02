@@ -44,23 +44,33 @@ jobs:
       
       - name: Test CLI functionality
         run: |
-          # Test basic functionality
+          echo "Testing CLI with AI-like file (should exit with code 1)..."
+          set +e  # Don't exit on non-zero exit codes
           npx . test/fixtures/ai-like.md
+          AI_LIKE_EXIT_CODE=$?
+          set -e
           
-          # Test JSON output
-          npx . test/fixtures/ai-like.md --json > /tmp/test-output.json
+          echo "Testing CLI with clean file (should exit with code 0)..."
+          npx . test/fixtures/clean.md
+          CLEAN_EXIT_CODE=$?
+          
+          echo "Testing JSON output..."
+          set +e
+          npx . test/fixtures/ai-like.md --json > test-output.json
+          set -e
+          echo "JSON output generated successfully"
           
           # Verify exit codes
-          if npx . test/fixtures/clean.md; then
-            echo "✅ Clean file test passed (exit code 0)"
+          if [ $AI_LIKE_EXIT_CODE -eq 1 ]; then
+            echo "✅ AI-like file test passed (exit code 1 as expected)"
           else
-            echo "❌ Clean file test failed"
+            echo "❌ AI-like file test failed (expected exit code 1, got $AI_LIKE_EXIT_CODE)"
             exit 1
           fi
           
-          if ! npx . test/fixtures/ai-like.md; then
-            echo "✅ AI-like file test passed (exit code 1)"
+          if [ $CLEAN_EXIT_CODE -eq 0 ]; then
+            echo "✅ Clean file test passed (exit code 0 as expected)"
           else
-            echo "❌ AI-like file test failed"
+            echo "❌ Clean file test failed (expected exit code 0, got $CLEAN_EXIT_CODE)"
             exit 1
           fi
