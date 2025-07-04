@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/ai-fix.js",
   "bin": {
-    "ai-fix": "./dist/ai-fix.js"
+    "ai-writing-fix-cli": "./dist/ai-fix.js"
   },
   "scripts": {
     "build": "tsc",
